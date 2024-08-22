@@ -49,6 +49,8 @@ def main():
                 time.sleep(3)
                 sys.exit()
 
+        player.draw_shots(screen)
+
         pygame.display.flip()
 
         dt = clock.tick(60) / 1000
