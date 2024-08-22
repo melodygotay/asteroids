@@ -1,8 +1,9 @@
-import pygame
+import pygame, sys, time
 from constants import *
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from circleshape import *
 
 def main():
     pygame.init()
@@ -23,6 +24,11 @@ def main():
     dt = 0
 
     while True:
+        pygame.font.init()
+        font = pygame.font.Font(None, 50)
+        text_surface = font.render("Game over!", True, "white")
+        text_place = text_surface.get_rect(center=(640, 360))
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -34,6 +40,14 @@ def main():
 
         for obj in drawable:
             obj.draw(screen)
+
+        for obj in asteroids:
+            if obj.collides_with(player):
+                pygame.display.set_caption("Game over!")
+                screen.blit(text_surface, text_place)
+                pygame.display.flip()
+                time.sleep(3)
+                sys.exit()
 
         pygame.display.flip()
 
