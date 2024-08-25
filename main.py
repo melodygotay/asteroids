@@ -6,6 +6,7 @@ from asteroidfield import AsteroidField
 from circleshape import *
 
 def main():
+    score = 0
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
@@ -25,12 +26,12 @@ def main():
 
     dt = 0
 
+    pygame.font.init()
+    font = pygame.font.Font(None, 50)
+    text_surface = font.render(f"Game over! You ended with a score of {score}", True, "white")
+    text_place = text_surface.get_rect(center=(640, 360))
+    
     while True:
-        pygame.font.init()
-        font = pygame.font.Font(None, 50)
-        text_surface = font.render("Game over!", True, "white")
-        text_place = text_surface.get_rect(center=(640, 360))
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -45,7 +46,8 @@ def main():
 
         for asteroid in asteroids:
             if asteroid.collides_with(player):
-                pygame.display.set_caption("Game over!")
+                text_surface = font.render(f"Game over! You ended with a score of {score}!", True, "white")
+                text_place = text_surface.get_rect(center=(640, 360))
                 screen.blit(text_surface, text_place)
                 pygame.display.flip()
                 time.sleep(3)
@@ -53,13 +55,29 @@ def main():
 
             for shot in shots:
                 if asteroid.collides_with(shot):
-                    asteroid.kill()
+                    if asteroid.radius == 60:
+                        score += 20
+                    elif asteroid.radius == 40:
+                        score += 40
+                    else:
+                        score += 60
+
+                    shot.kill()
+                    asteroid.split()
+
+        # Update score surface after score changes
+        score_surface = font.render(f"Score: {score}", True, "white")
+        score_place = score_surface.get_rect(topleft=(20, 20))  # Position at top-left corner
+
+        # Blit the score to the screen
+        screen.blit(score_surface, score_place)
 
         player.draw_shots(screen)
 
         pygame.display.flip()
 
         dt = clock.tick(60) / 1000
+
 
 if __name__ == "__main__":
     main()
